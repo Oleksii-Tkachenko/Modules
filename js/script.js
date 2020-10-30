@@ -82,7 +82,7 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
         polyline.setAttribute("stroke-miterlimit", "0");
         polyline.setAttribute("fill", "none");
 
-        let polylineLength = polyline.getTotalLength();
+        let polylineLength = getPolylineLength(polyline);
 
         polyline.setAttribute("stroke-dasharray", polylineLength + ' ' + polylineLength);
         polyline.setAttribute("stroke-dashoffset", polylineLength);
@@ -119,23 +119,31 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
         let llx = (centralAngle < Math.PI) ? xl2 + 5 : xl3;
         let lly = yl2 - 5;
 
+        let pathForText = document.createElementNS(svgns, "path");
+        pathForText.setAttribute("id", `p${i}`);
+        pathForText.setAttribute("d", `m${llx},${lly} h0`);
+        chart.appendChild(pathForText);
+
+        let textInputEffect = createAnimation("d", `sectorAnimStart${i}.end`, `m${llx},${lly} h100`, "1s", `textInput${i}`);
+        pathForText.appendChild(textInputEffect);
+
+        let textHide = createAnimation("d", `lineRemove${i}.begin`, `m${llx},${lly} h0`, "0.5s", `textOut${i}`);
+        pathForText.appendChild(textHide);
+
+        let textForceHide = createAnimation("d", `sectorAnimEnd${i}.end`, `m${llx},${lly} h0`, "0.5s", `textOut${i}`);
+        pathForText.appendChild(textForceHide);
+
         let lineLabel = document.createElementNS(svgns, "text");
-        lineLabel.setAttribute("x", llx);
-        lineLabel.setAttribute("y", lly);
         lineLabel.setAttribute("font-family", "sans-serif");
         lineLabel.setAttribute("font-size", "16");
-        lineLabel.setAttribute("opacity", "0");
-        lineLabel.appendChild(document.createTextNode(labels[i]));
+        lineLabel.setAttribute("fill", "black");
         chart.appendChild(lineLabel);
 
-        let lineLabelAnimation = createAnimation("opacity", `sectorAnimStart${i}.end`, "1", "0.5s", `labelShow${i}`);
-        lineLabel.appendChild(lineLabelAnimation);
+        let textpath = document.createElementNS(svgns, "textPath");
+        textpath.setAttribute("href", `#p${i}`);
+        lineLabel.appendChild(textpath);
 
-        let lineLabelHide = createAnimation("opacity", `lineRemove${i}.begin`, "0", "0.1s", `labelHide${i}`);
-        lineLabel.appendChild(lineLabelHide);
-
-        let lineLabelForceHide = createAnimation("opacity", `sectorAnimEnd${i}.end`, "0", "0.1s", `labelHide${i}`);
-        lineLabel.appendChild(lineLabelForceHide);
+        textpath.appendChild(document.createTextNode(labels[i]));
 
         // Legend
 
@@ -191,5 +199,13 @@ function createAnimation(attr, trigger, endpoint, duration, id) {
     return animate;
 }
 
-
-
+function getPolylineLength(polylineElement){
+    function dis(p,q){
+        return Math.sqrt((p.x-q.x)*(p.x-q.x) + (p.y-q.y)*(p.y-q.y));
+    }
+    var ps = polylineElement.points, n = ps.numberOfItems, len=0;
+    for(var i=1; i<n; i++){
+        len += dis(ps.getItem(i-1),ps.getItem(i));
+    }
+    return len;
+}
