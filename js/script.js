@@ -19,14 +19,19 @@ let data = [12, 23, 34, 45],
     r = 150,
     colors = ['red', 'blue', 'yellow', 'green'],
     labels = ['Север', 'Юг', 'Восток', 'Запад'],
-    lx = 600,
-    ly = 220;
+    lx = 620,
+    ly = 220,
+    enableLegend = true;
 
-window.onload = document.body.appendChild(
-    pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly)
+const defaultStorage = [data, width, height, cx, cy, r, colors, labels, lx, ly, enableLegend];
+
+const svgContainer = document.querySelector(".svgChart__svgContainer");
+
+window.onload = svgContainer.appendChild(
+    pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enableLegend)
 );
 
-function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
+function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enableLegend) {
     let svgns = "http://www.w3.org/2000/svg";
 
     let chart = document.createElementNS(svgns, "svg:svg");
@@ -57,7 +62,7 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
 
         path.setAttribute("d", d);
         path.setAttribute("fill", colors[i]);
-        // path.setAttribute("stroke", colors[i]);
+        // path.setAttribute("stroke", colors[i]); //border
         path.setAttribute("stroke-width", "1");
         chart.appendChild(path);
 
@@ -66,7 +71,7 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
         let modR = r * 0.5;
 
         let centralAngle = startangle + (endangle - startangle) / 2;
-        let textLength = labels[i].length * 10;
+        let textLength = getWidthOfText(labels[i], "sans serif", 16);
         
         let [xl1, yl1, xl2, yl2] = calcCoord(cx, cy, r, centralAngle, centralAngle, 0.7, 2);
         let xl3 = (centralAngle < Math.PI) ? xl2 + textLength : xl2 - textLength;
@@ -124,13 +129,13 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
         pathForText.setAttribute("d", `m${llx},${lly} h0`);
         chart.appendChild(pathForText);
 
-        let textInputEffect = createAnimation("d", `sectorAnimStart${i}.end`, `m${llx},${lly} h100`, "1s", `textInput${i}`);
+        let textInputEffect = createAnimation("d", `lineStart${i}.end`, `m${llx},${lly} h100`, "1s", `textInput${i}`);
         pathForText.appendChild(textInputEffect);
 
         let textHide = createAnimation("d", `lineRemove${i}.begin`, `m${llx},${lly} h0`, "0.5s", `textOut${i}`);
         pathForText.appendChild(textHide);
 
-        let textForceHide = createAnimation("d", `sectorAnimEnd${i}.end`, `m${llx},${lly} h0`, "0.5s", `textOut${i}`);
+        let textForceHide = createAnimation("d", `sectorAnimEnd${i}.end`, `m${llx},${lly} h0`, "0.1s", `textOut${i}`);
         pathForText.appendChild(textForceHide);
 
         let lineLabel = document.createElementNS(svgns, "text");
@@ -147,32 +152,45 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly) {
 
         // Legend
 
-        // small square identifier
+        if (enableLegend) {
 
-        let icon = document.createElementNS(svgns, "rect");
-        icon.setAttribute("x", lx);
-        icon.setAttribute("y", ly + 30*i);
-        icon.setAttribute("width", 20);
-        icon.setAttribute("height", 20);
-        icon.setAttribute("fill", colors[i]);
-        icon.setAttribute("stroke", "black");
-        chart.appendChild(icon);
+            // small square identifier
 
-        // label
+            let icon = document.createElementNS(svgns, "rect");
+            icon.setAttribute("x", lx);
+            icon.setAttribute("y", ly + 30*i);
+            icon.setAttribute("width", 20);
+            icon.setAttribute("height", 20);
+            icon.setAttribute("fill", colors[i]);
+            icon.setAttribute("stroke", "black");
+            chart.appendChild(icon);
 
-        let label = document.createElementNS(svgns, "text");
-        label.setAttribute("x", lx + 30);
-        label.setAttribute("y", ly + 30*i + 18);
+            // label
 
-        // style with css later
+            let label = document.createElementNS(svgns, "text");
+            label.setAttribute("x", lx + 30);
+            label.setAttribute("y", ly + 30*i + 18);
 
-        label.setAttribute("font-family", "sans-serif");
-        label.setAttribute("font-size", "16");
+            // style with css later
 
-        label.appendChild(document.createTextNode(labels[i]));
-        chart.appendChild(label);
+            label.setAttribute("font-family", "sans-serif");
+            label.setAttribute("font-size", "16");
+
+            label.appendChild(document.createTextNode(labels[i]));
+            chart.appendChild(label);
+        }
     }
     return chart;
+}
+
+function getWidthOfText (txt, fontname, fontsize) {
+    if (getWidthOfText.c === undefined) {
+        getWidthOfText.c = document.createElement('canvas');
+        getWidthOfText.ctx = getWidthOfText.c.getContext('2d');
+    }
+    let fontspec = fontsize + ' ' + fontname;
+    if (getWidthOfText.ctx.font !== fontspec) getWidthOfText.ctx.font = fontspec;
+    return getWidthOfText.ctx.measureText(txt).width * 1.6;
 }
 
 function calcCoord(cx, cy, r, startangle, endangle, coefIncr = 1, coefSecond = 1) {
@@ -184,6 +202,7 @@ function calcCoord(cx, cy, r, startangle, endangle, coefIncr = 1, coefSecond = 1
 }
 
 function calculateD(cx, cy, x1, y1, x2, y2, r, big, coefIncr = 1) {
+    x2 = (Math.abs(x1 - x2) < 0.01) ? x2 - 0.01 : x2;
     return "M " + cx + "," + cy + " L " + x1 + "," + y1 + " A " + coefIncr * r + "," + coefIncr * r + " 0 " + big + " 1 " + x2 + "," + y2 + " Z";
 }
 
@@ -209,3 +228,323 @@ function getPolylineLength(polylineElement){
     }
     return len;
 }
+
+// Pie chart menu
+
+const newChartButton = document.querySelector(".button-newChart");
+const editButton = document.querySelector(".button-edit");
+const regButtonBox = document.querySelector(".regButtonsBox");
+const cancelButton = document.querySelector(".button-cancel");
+const doneButton = document.querySelector(".button-done");
+const menuField = document.querySelector(".inputList");
+const title = document.querySelector(".svgChart__title");
+
+const inputField = document.createElement("li");
+    inputField.setAttribute("draggable", true);
+    inputField.classList.add("inputList__inputField", "inputField");
+const inputZone = document.createElement("div");
+    inputZone.classList.add("inputField__inputZone", "inputZone");
+
+inputField.appendChild(inputZone);
+    
+const inputText = document.createElement("input");
+    inputText.classList.add("inputZone__inputText");
+    inputText.setAttribute("type", "text");
+    inputText.setAttribute("placeholder", "sector label, 100%");
+
+inputZone.appendChild(inputText);
+
+const inputColor = document.createElement("input");
+    inputColor.classList.add("inputZone__inputColor");
+    inputColor.setAttribute("type", "color");
+
+inputZone.appendChild(inputColor);
+
+const plusButton = document.createElement("button");
+    plusButton.classList.add("inputField__plusButton", "button", "button-round");
+    plusButton.setAttribute("type", "button");
+    plusButton.innerText = "+";
+
+inputField.appendChild(plusButton);
+
+newChartButton.onclick = (e) => {
+    title.innerText = "Random chart";
+    title.contentEditable = true;
+    removeAllChildNodes(menuField);
+    menuField.appendChild(inputField);
+    inputField.querySelector('.inputZone__inputColor').value = getRandomColor();
+    regButtonBox.style.display = 'flex';
+    menuField.style.display = "block";
+
+    // in case of redo chart
+
+    inputField.querySelector('.inputZone__inputText').value = "";
+    const minusSelector = inputField.querySelector('.inputField__minusButton');
+    if (minusSelector) {
+        minusSelector.classList.replace("inputField__minusButton", "inputField__plusButton");
+        minusSelector.innerText = "+";
+    }
+    clickRegister();
+    inputRegister();
+    applyNewPieChart();
+};
+
+cancelButton.onclick = () => {
+    regButtonBox.style.display = "none";
+    removeAllChildNodes(menuField);
+    removeAllChildNodes(svgContainer);
+    svgContainer.appendChild(pieChart(...defaultStorage));
+    title.innerText = "Random chart";
+    title.contentEditable = false;
+};
+
+doneButton.onclick = () => {
+    if (checkAllInputs()) {
+        menuField.style.display = "none";
+        regButtonBox.style.display = "none";
+        editButton.style.display = "block";
+        title.contentEditable = false;
+        applyNewPieChart(true);  
+    }
+};
+
+doneButton.onmousedown = () => {
+    if (!checkAllInputs()) {
+        doneButton.style.borderColor = "#FF4747";  
+    }
+};
+
+doneButton.onmouseup = () => {
+    if (!checkAllInputs()) {
+        doneButton.style.borderColor = "#00FF00";  
+    }
+};
+
+editButton.onclick = () => {
+    menuField.style.display = "block";
+    regButtonBox.style.display = "flex";
+    editButton.style.display = "none";
+    title.contentEditable = true;
+    applyNewPieChart(false);
+};
+
+function removeAllChildNodes(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+}
+
+function clickRegister() {
+    const addButtons = document.getElementsByClassName("inputField__plusButton");
+    const removeButtons = document.getElementsByClassName("inputField__minusButton");
+    let n = 0;
+    for (let i = 0; i < addButtons.length; i++) {
+        addButtons[i].onclick = (e) => {
+            e.preventDefault();
+            let newInput = menuField.lastElementChild.cloneNode(true);
+            menuField.appendChild(newInput);
+            newInput.querySelector('.inputZone__inputColor').value = getRandomColor();
+            newInput.querySelector('.inputZone__inputText').value = "";
+            checkColor();
+            if (n >= 1) {
+                addButtons[n-1].classList.replace("inputField__plusButton", "inputField__minusButton");
+            }
+            clickRegister();
+            inputRegister();
+            insertPercent();
+            applyNewPieChart();
+            dragAndDrop();
+        };
+        n++;
+    }
+    for (let i = 0; i < removeButtons.length; i++) {
+        removeButtons[i].innerText = "-";
+        removeButtons[i].onclick = (e) => {
+            e.target.parentElement.remove();
+            insertPercent();
+            applyNewPieChart();
+        };
+    }
+}
+
+function changeMinusPlusBtn() {
+    const buttons = menuField.querySelectorAll(".button");
+    buttons.forEach((item, i) => {
+        item.classList.replace("inputField__plusButton", "inputField__minusButton");
+        item.innerText = "-";
+    });
+    buttons[buttons.length - 1].classList.replace("inputField__minusButton", "inputField__plusButton");
+    buttons[buttons.length - 1].innerText = "+";
+}
+
+function inputRegister() {
+    const allColorInputs = menuField.querySelectorAll('.inputZone__inputColor');
+    const allTextInputs = menuField.querySelectorAll('.inputZone__inputText');
+    
+    for (let i = 0; i < allColorInputs.length; i++) {
+        
+        allColorInputs[i].onchange = () => {
+            allColorInputs[i].setCustomValidity("");
+            checkColor();
+            applyNewPieChart(); 
+        };
+        allTextInputs[i].onblur = () => {
+            checkInput();
+            insertPercent();
+            applyNewPieChart(); 
+        };
+    }
+}
+
+// Validate input
+
+// Check color
+
+function checkColor() {
+    const allColorInputs = menuField.getElementsByClassName('inputZone__inputColor');
+    if (allColorInputs.length > 1) {
+        const colorArr = [];
+        for (let i = 0; i < allColorInputs.length; i++) {
+            let color = allColorInputs[i].value;
+            if (colorArr.includes(color)) {
+                allColorInputs[i].setCustomValidity("change color");
+                allColorInputs[colorArr.findIndex(item => {return item == color;})].setCustomValidity("change color");
+            } else {
+                allColorInputs[i].setCustomValidity("");
+            }
+            colorArr.push(color);
+        }
+    }
+}
+
+function getRandomColor() {
+  let letters = '0123456789ABCDEF';
+  let color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
+// Check input sector name and %
+
+function checkInput() {
+    const allTextInputs = menuField.querySelectorAll(".inputZone__inputText");
+    allTextInputs.forEach(input => {
+        let patt = /^[A-Za-zА-Яа-я0-9 \\-\\.]{1,10}, ?([1-9](\d)?|([1-9](\d)?\.\d{1,2}))%$/; 
+        if (!patt.test(input.value) && input.value != "") {
+            input.setCustomValidity("correct input according tamplate");
+            input.oninput = checkInput;
+        } else {
+            input.setCustomValidity("");
+            input.oninput = false;
+        }
+    });
+}
+
+function insertPercent() {
+    const allTextInputs = menuField.querySelectorAll(".inputZone__inputText");
+    const percent = [];
+    allTextInputs.forEach(input => {
+        if (input.value && input.validity.valid) {
+            percent.push(parsePercent(input.value));
+        }
+    });
+    if ((allTextInputs.length >= 1) && (allTextInputs.length > percent.length)) {
+        const sumInputPercent = percent.length == 0 ? 0 : percent.reduce((a, b) => a + b);
+        const restPecent = ((100 - sumInputPercent) / (allTextInputs.length - percent.length)).toFixed(2);
+        allTextInputs.forEach(input => {
+            input.setAttribute("placeholder", `sector label, ${restPecent}%`);
+        });
+    }
+    
+}
+
+function parsePercent(str) {
+    let patt = /\,(.+)%/;
+    let slice = patt.exec(str)[1].trim();
+    return parseFloat(slice);
+}
+
+function parseLabel(str) {
+    let patt = /(.+)\,/;
+    let slice = patt.exec(str)[1];
+    return slice;
+}
+
+function applyNewPieChart(enableLegend) {
+    const items = menuField.querySelectorAll(".inputZone"),
+          textInputs = menuField.querySelectorAll(".inputZone__inputText"),
+          colorInputs = menuField.querySelectorAll(".inputZone__inputColor");
+    data = [];
+    colors = [];
+    labels = [];
+    if (checkAllInputs()) {
+        items.forEach((item, i) => {
+        let dataItem = textInputs[i].value ? parsePercent(textInputs[i].value) : parsePercent(textInputs[i].placeholder);
+        let colorItem = colorInputs[i].value;
+        let labeItem = textInputs[i].value ? parseLabel(textInputs[i].value) : "sector label";
+        data.push(dataItem);
+        colors.push(colorItem);
+        labels.push(labeItem);
+        });
+        removeAllChildNodes(svgContainer);
+        svgContainer.appendChild(pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enableLegend));
+    }
+}
+
+function checkAllInputs() {
+    const items = menuField.querySelectorAll(".inputZone"),
+          textInputs = menuField.querySelectorAll(".inputZone__inputText"),
+          colorInputs = menuField.querySelectorAll(".inputZone__inputColor");
+    let allInputsValid = true;
+    for (let i = 0; i < items.length; i++) {
+        if (!textInputs[i].validity.valid || !colorInputs[i].validity.valid) {
+            allInputsValid = false;
+        }
+    }
+    return allInputsValid;
+}
+
+// Drag and drop li
+
+function dragAndDrop() {
+    const draggables = document.querySelectorAll(".inputField");
+
+    draggables.forEach(draggable => {
+        draggable.addEventListener("dragstart", () => {
+            draggable.classList.add("dragging");
+        });
+        draggable.addEventListener("dragend", () => {
+            draggable.classList.remove("dragging");
+            changeMinusPlusBtn();
+            applyNewPieChart();
+        });
+    });
+
+    menuField.addEventListener("dragover", e => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(menuField, e.clientY);
+        const draggable = document.querySelector(".dragging");
+        if (afterElement == null) {
+            menuField.appendChild(draggable);
+        } else {
+            menuField.insertBefore(draggable, afterElement);
+        }
+    });
+}
+
+function getDragAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll(".inputField:not(.dragging)")];
+
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
