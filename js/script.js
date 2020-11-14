@@ -266,7 +266,6 @@ inputZone.appendChild(inputColor);
 const plusButton = document.createElement("button");
     plusButton.classList.add("inputField__plusButton", "button", "button-round");
     plusButton.setAttribute("type", "button");
-    plusButton.innerText = "+";
 
 inputField.appendChild(plusButton);
 
@@ -285,7 +284,6 @@ newChartButton.onclick = (e) => {
     const minusSelector = inputField.querySelector('.inputField__minusButton');
     if (minusSelector) {
         minusSelector.classList.replace("inputField__minusButton", "inputField__plusButton");
-        minusSelector.innerText = "+";
     }
     clickRegister();
     inputRegister();
@@ -361,7 +359,6 @@ function clickRegister() {
         n++;
     }
     for (let i = 0; i < removeButtons.length; i++) {
-        removeButtons[i].innerText = "-";
         removeButtons[i].onclick = (e) => {
             e.target.parentElement.remove();
             insertPercent();
@@ -374,10 +371,8 @@ function changeMinusPlusBtn() {
     const buttons = menuField.querySelectorAll(".button");
     buttons.forEach((item, i) => {
         item.classList.replace("inputField__plusButton", "inputField__minusButton");
-        item.innerText = "-";
     });
     buttons[buttons.length - 1].classList.replace("inputField__minusButton", "inputField__plusButton");
-    buttons[buttons.length - 1].innerText = "+";
 }
 
 function inputRegister() {
@@ -535,7 +530,6 @@ function checkAllPercent() {
             }   
         } 
     })
-    console.log(percentArr, totalPercent, (percentArr.length == textInputs.length))
 }
 
 // Drag and drop li
