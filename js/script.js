@@ -12,14 +12,14 @@
 */
 
 let data = [12, 23, 34, 45],
-    width = 800,
+    width = 850,
     height = 600,
-    cx = 300,
+    cx = 350,
     cy = 300,
     r = 150,
     colors = ['red', 'blue', 'yellow', 'green'],
     labels = ['North', 'South', 'East', 'West'],
-    lx = 620,
+    lx = 670,
     ly = 220,
     enableLegend = true;
 
@@ -39,6 +39,9 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enable
     chart.setAttribute("width", width);
     chart.setAttribute("height", height);
     chart.setAttribute("viewBox", "0 0 " + width + " " + height);
+    chart.setAttribute("xmlns", svgns);
+    chart.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
 
     let total = 0;
     for (let i = 0; i < data.length; i++) total += data[i];
@@ -68,8 +71,6 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enable
 
         // line
 
-        let modR = r * 0.5;
-
         let centralAngle = startangle + (endangle - startangle) / 2;
         let textLength = getWidthOfText(labels[i], "sans serif", 16);
         
@@ -82,8 +83,8 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enable
         let polyline = document.createElementNS(svgns, "polyline");
         
         polyline.setAttribute("points", points);
-        polyline.setAttribute("stroke-width", "1");
-        polyline.setAttribute("stroke", "black");
+        polyline.setAttribute("stroke-width", "2");
+        polyline.setAttribute("stroke", "#323234");
         polyline.setAttribute("stroke-miterlimit", "0");
         polyline.setAttribute("fill", "none");
 
@@ -141,11 +142,13 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enable
         let lineLabel = document.createElementNS(svgns, "text");
         lineLabel.setAttribute("font-family", "sans-serif");
         lineLabel.setAttribute("font-size", "16");
-        lineLabel.setAttribute("fill", "black");
+        lineLabel.setAttribute("font-weight", "600");
+        lineLabel.setAttribute("fill", "#323234");
         chart.appendChild(lineLabel);
 
         let textpath = document.createElementNS(svgns, "textPath");
         textpath.setAttribute("href", `#p${i}`);
+        textpath.setAttribute("xlink:href", `#p${i}`);
         lineLabel.appendChild(textpath);
 
         textpath.appendChild(document.createTextNode(labels[i]));
@@ -190,7 +193,7 @@ function getWidthOfText (txt, fontname, fontsize) {
     }
     let fontspec = fontsize + ' ' + fontname;
     if (getWidthOfText.ctx.font !== fontspec) getWidthOfText.ctx.font = fontspec;
-    return getWidthOfText.ctx.measureText(txt).width * 1.6;
+    return getWidthOfText.ctx.measureText(txt).width * 1.8;
 }
 
 function calcCoord(cx, cy, r, startangle, endangle, coefIncr = 1, coefSecond = 1) {
@@ -431,9 +434,9 @@ function getRandomColor() {
 function checkInput() {
     const allTextInputs = menuField.querySelectorAll(".inputZone__inputText");
     allTextInputs.forEach(input => {
-        let patt = /^[A-Za-zА-Яа-я0-9 \\-\\.]{1,10}, ?([1-9](\d)?|([1-9](\d)?\.\d{1,2}))%$/; 
+        let patt = /^[A-Za-zА-Яа-я0-9 \\-\\.]{1,10}, ?([1-9](\d)?|([0-9](\d)?\.\d{1,2}))%$/; 
         if (!patt.test(input.value) && input.value != "") {
-            input.setCustomValidity("correct input according tamplate");
+            input.setCustomValidity("Correct input according tamplate");
             input.oninput = checkInput;
         } else {
             input.setCustomValidity("");
@@ -452,7 +455,7 @@ function insertPercent() {
     });
     if ((allTextInputs.length >= 1) && (allTextInputs.length > percent.length)) {
         const sumInputPercent = percent.length == 0 ? 0 : percent.reduce((a, b) => a + b);
-        const restPecent = ((100 - sumInputPercent) / (allTextInputs.length - percent.length)).toFixed(2);
+        const restPecent = Math.floor(((100 - sumInputPercent) / (allTextInputs.length - percent.length))*10)/10;
         allTextInputs.forEach(input => {
             input.setAttribute("placeholder", `sector label, ${restPecent}%`);
         });
@@ -494,16 +497,45 @@ function applyNewPieChart(enableLegend) {
 }
 
 function checkAllInputs() {
-    const items = menuField.querySelectorAll(".inputZone"),
-          textInputs = menuField.querySelectorAll(".inputZone__inputText"),
+    checkAllPercent();
+    const textInputs = menuField.querySelectorAll(".inputZone__inputText"),
           colorInputs = menuField.querySelectorAll(".inputZone__inputColor");
     let allInputsValid = true;
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < textInputs.length; i++) {
         if (!textInputs[i].validity.valid || !colorInputs[i].validity.valid) {
             allInputsValid = false;
         }
     }
     return allInputsValid;
+}
+
+function checkAllPercent() {
+    const textInputs = menuField.querySelectorAll(".inputZone__inputText");
+    let percentArr = [];
+    let totalPercent = 0;
+    let belowZeroValues = false;
+    textInputs.forEach(input => {
+        console.log(input.validity.valid)
+        if (input.value && input.validity.valid) {
+            percentArr.push(parsePercent(input.value))
+        } else if (!input.value) {
+            percentArr.push(parsePercent(input.placeholder))
+            if (parsePercent(input.placeholder) < 0) {
+                belowZeroValues = true
+            }
+        }
+    })
+    if (percentArr.length > 0) {
+        totalPercent = Math.ceil(percentArr.reduce((a, b) => a + b));
+    }
+    textInputs.forEach(input => {
+        if (((percentArr.length == textInputs.length) && totalPercent != 100) || belowZeroValues) {
+            if (input.value) {
+                input.setCustomValidity("Total percent sum should be 100%");
+            }   
+        } 
+    })
+    console.log(percentArr, totalPercent, (percentArr.length == textInputs.length))
 }
 
 // Drag and drop li
