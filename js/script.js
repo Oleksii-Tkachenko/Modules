@@ -380,7 +380,6 @@ function inputRegister() {
     const allTextInputs = menuField.querySelectorAll('.inputZone__inputText');
     
     for (let i = 0; i < allColorInputs.length; i++) {
-        
         allColorInputs[i].onchange = () => {
             allColorInputs[i].setCustomValidity("");
             checkColor();
@@ -405,7 +404,7 @@ function checkColor() {
         for (let i = 0; i < allColorInputs.length; i++) {
             let color = allColorInputs[i].value;
             if (colorArr.includes(color)) {
-                allColorInputs[i].setCustomValidity("change color");
+                allColorInputs[i].setCustomValidity("Change color");
                 allColorInputs[colorArr.findIndex(item => {return item == color;})].setCustomValidity("change color");
             } else {
                 allColorInputs[i].setCustomValidity("");
@@ -510,7 +509,6 @@ function checkAllPercent() {
     let totalPercent = 0;
     let belowZeroValues = false;
     textInputs.forEach(input => {
-        console.log(input.validity.valid)
         if (input.value && input.validity.valid) {
             percentArr.push(parsePercent(input.value))
         } else if (!input.value) {
