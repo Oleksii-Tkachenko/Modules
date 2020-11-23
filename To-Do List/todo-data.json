@@ -1,0 +1,8 @@
+{"tasks" :[
+{"task":"HTML I","done":true, "date" : "29.02.2020"},
+{"task":"CSS","done":true, "date" : "30.03.2020"},
+{"task":"Responsive design","done":true, "date" : "15.04.2020"},
+{"task":"WordPress","done":false, "date" : "15.05.2020"},
+{"task":"JavaScript I","done":false, "date" : "01.06.2020"},
+{"task":"JavaScript II","done":false, "date" : "30.06.2020"}
+]}
