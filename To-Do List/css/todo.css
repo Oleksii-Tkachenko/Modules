@@ -1,87 +1,139 @@
-.container{
-  position: relative;
-  padding: 15px;
-  border: 1px dashed #ccc;
-  width: 600px;
-  margin: 10px auto;
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: Arial,
+		Helvetica,
+		sans-serif;
 }
-header{
+body,
+html {
+	height: 100%;
+}
+button {
+	cursor: pointer;
+}
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #0079BF;
+}
+.container {
+	position: relative;
+	padding: 15px;
+	border-radius: 5px;
+	width: 670px;
+	margin: 10px auto;
+	min-height: 250px;
+	background: #fff;
+}
+header {
 	display: flex;
 	justify-content: space-between; 
 }
-h1{
+h1 {
 	margin: 0;
 }
-form{
+form {
 	margin: 15px 0 0;
 }
+.input-box {
+	border: 1px solid #0C0C0D;
+	width: 330px;
+	height: 23px;
+	border-radius: 5px;
+	float: left;
+	box-sizing: content-box;
+	position: relative;
+}
+.input-box::before {
+	content: '';
+	position: absolute;
+	background: #0C0C0D;
+	height: 23px;
+	left: 160px;
+	border-left: 1px solid #0C0C0D;
+}
+.textfield {
+	border: none;
+}
 .clear-btn{
+	height: 24px;
+	padding: 2px 10px;
 	border: 0;
-	background: none;
+	color: #fff;
+	border-radius: 5px;
+	background: rgb(70, 67, 67);
 }
 .add-btn {
-  color: #fff;
-  background: #000;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 5px;
+	position: relative;
+	right: -4px;
+	top: -1px;
+	height: 25px;
+	color: #fff;
+	background: #0C0C0D;
+	padding: 4px 10px;
+	border: 0;
+	border-radius: 5px;
 }
-
 .todo-list {
-  margin: 15px 0 0;
+	margin: 15px 0 0;
 }
 .todo-item:first-child{
-  display: none;
+	display: none;
 }
 .del-btn {
-  color: #f00;
-  padding: 0 15px 0;
-  border: 0;
+	padding: 0 15px 0;
+	border: 0;
+	margin: 0 5px 0 8px;
 }
 .red {
-  color: red;
+	color: red;
 }
 .green {
-  color: green;
+	color: green;
 }
-.done{
-  text-decoration: line-through;
-  color: black;
+.done {
+	text-decoration: line-through;
+	color: #0C0C0D;
 }
-.title{
-  cursor: default;
-  white-space: pre;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 16px;
-  font-weight: 600;
+.title {
+	cursor: default;
+	white-space: pre;
+	font-family: 'Roboto Mono',
+	monospace;
+	font-size: 16px;
 }
-.select{
-  position: absolute;
-  top: 106px;
-  right: 20px;
-}
-.find {
-  position: absolute;
-  top: 69px;
-  left: 463px;
+.select {
+	position: absolute;
+	top: 106px;
+	right: 20px;
 }
 .find_label {
-  position: absolute;
-  top: 69px;
-  left: 424px;
+	margin-left: 11px;
 }
 .datefield {
-  width: 75px;
+	width: 88px;
+	margin-right: -5px;
+	border: none;
+	position: relative;
+
 }
 .reload {
-  width: 22px;
-  height: 20px;
-  font-size: 20px;
-  padding: 0;
-  border: 0;
-  margin: 0;
-  background: #fff;
-  box-sizing: border-box;
-  line-height: 10px;
-  vertical-align: top;
+	padding: 4px 10px;
+	border: 0;
+	border-radius: 5px;
+	color: #fff;
+	border-radius: 5px;
+	background: rgb(70, 67, 67);
+	margin-left: 3px;
+	height: 25px;
 }
+.reload span {
+	font-size: 18px;
+	line-height: 10px;
+}
+
