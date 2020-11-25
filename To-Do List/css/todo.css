@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,500&display=swap');
 
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
-	font-family: Arial,
-		Helvetica,
-		sans-serif;
+	font-family: 'Roboto', sans-serif;
+	color: #fff;
 }
 body,
 html {
@@ -19,16 +19,17 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: #0079BF;
+	background: #001925;
 }
 .container {
 	position: relative;
 	padding: 15px;
 	border-radius: 5px;
-	width: 670px;
+	width: 730px;
 	margin: 10px auto;
-	min-height: 250px;
-	background: #fff;
+	min-height: 280px;
+	background: #042b3e;
+	border: 2px solid #fff;
 }
 header {
 	display: flex;
@@ -36,48 +37,64 @@ header {
 }
 h1 {
 	margin: 0;
+	font-style: italic;
+}
+.button-box {
+	float: right;
+	margin: 0;
 }
 form {
 	margin: 15px 0 0;
 }
 .input-box {
-	border: 1px solid #0C0C0D;
-	width: 330px;
-	height: 23px;
+	border: 2px solid #fff;
+	width: 417px;
+	height: 30px;
 	border-radius: 5px;
-	float: left;
 	box-sizing: content-box;
 	position: relative;
+	display: flex;
+	align-items: center;
 }
 .input-box::before {
 	content: '';
 	position: absolute;
-	background: #0C0C0D;
-	height: 23px;
-	left: 160px;
-	border-left: 1px solid #0C0C0D;
+	height: 30px;
+	left: 220px;
+	border-left: 2px solid #fff;
 }
 .textfield {
 	border: none;
+	background:#042b3e;
+	font-weight: 500;
+	font-size: 16px;
+	margin-left: 5px;
+	width: 212px;
 }
 .clear-btn{
-	height: 24px;
-	padding: 2px 10px;
+	height: 30px;
+	padding: 2px 10px 2px 5px;
 	border: 0;
-	color: #fff;
+	color:#fff;
+	border: 2px solid #fff;
 	border-radius: 5px;
-	background: rgb(70, 67, 67);
+	background: #042b3e;
+	font-weight: 500;
+	font-size: 16px;
+	float: right;
 }
 .add-btn {
-	position: relative;
-	right: -4px;
-	top: -1px;
-	height: 25px;
+	position: absolute;
+	right: -2px;
+	top: -2px;
+	height: 34px;
 	color: #fff;
-	background: #0C0C0D;
+	background: #042b3e;
 	padding: 4px 10px;
-	border: 0;
+	border: 2px solid #fff;
 	border-radius: 5px;
+	font-weight: 500;
+	font-size: 16px;
 }
 .todo-list {
 	margin: 15px 0 0;
@@ -86,9 +103,14 @@ form {
 	display: none;
 }
 .del-btn {
-	padding: 0 15px 0;
-	border: 0;
-	margin: 0 5px 0 8px;
+	border: 1px solid #fff;
+	border-radius: 50%;
+	margin: 0 10px 0 12px;
+	width: 18px;
+	height: 18px;
+	background:#042b3e;
+	line-height: 10px;
+	box-sizing: content-box;
 }
 .red {
 	color: red;
@@ -97,43 +119,85 @@ form {
 	color: green;
 }
 .done {
-	text-decoration: line-through;
-	color: #0C0C0D;
+	color: #8B9DA6;
 }
 .title {
+	position: relative;
 	cursor: default;
 	white-space: pre;
 	font-family: 'Roboto Mono',
 	monospace;
-	font-size: 16px;
+	font-size: 17px;
+	transition: color 0.5s;
+}
+.title::before {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 368px;
+	height: 2px;
+	background: #8B9DA6;
+	transform: scaleX(0);
+	transform-origin: right;
+	transition: transform 0.5s;
+}
+.done.title::before {
+	transform: scaleX(1);
+	transform-origin: left;
+	transition: transform 0.5s;
 }
 .select {
 	position: absolute;
 	top: 106px;
 	right: 20px;
+	background: #042b3e;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	font-size: 16px;
+}
+.find-box {
+	padding-top: 5px;
+	position: absolute;
+	display: flex;
+	justify-content: space-between;
+	width: 245px;
+	top: 69px;
+	right: 20px;
+}
+.find {
+	background: #042b3e;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	font-weight: 500;
+	font-size: 16px;
 }
 .find_label {
-	margin-left: 11px;
+	font-size: 18px;
+	font-weight: 400;
 }
 .datefield {
-	width: 88px;
-	margin-right: -5px;
+	width: 100px;
 	border: none;
-	position: relative;
-
+	background: #042b3e;
+	font-weight: 500;
+	font-size: 16px;
+	margin-left: 12px;
 }
 .reload {
-	padding: 4px 10px;
+	height: 30px;
+	padding: 2px 10px 2px 8px;
 	border: 0;
+	color:#fff;
+	border: 2px solid #fff;
 	border-radius: 5px;
-	color: #fff;
-	border-radius: 5px;
-	background: rgb(70, 67, 67);
-	margin-left: 3px;
-	height: 25px;
+	background: #042b3e;
+	font-weight: 500;
+	font-size: 16px;
+	margin-right: 10px;
 }
 .reload span {
-	font-size: 18px;
+	font-size: 20px;
 	line-height: 10px;
 }
 

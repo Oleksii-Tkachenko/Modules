@@ -1,5 +1,35 @@
 const ONEDAY = 1000*60*60*24;
 
+// default tasks for To-Do list
+
+const DEFAULT_TASKS = [
+{task : "some task", done : true, date : "29.02.2020"},
+{task : "another task", done : true, date : "30.03.2020"},
+{task : "additional task", done : true, date : "15.04.2020"},
+{task : "annoying task", done : false, date : "15.05.2020"},
+{task : "interesting task", done : false, date : "01.06.2020"},
+{task : "important task", done : false, date : "30.06.2020"}
+];
+function adjustDate() {
+    const TODAY = Date.now();
+    let date;
+    DEFAULT_TASKS.forEach((task, i) => {
+        if (i < 4) {
+            date = TODAY - ONEDAY * 30 * (4 - i);
+        } else if (i == 4) {
+            date = TODAY;
+        } else {
+            date = TODAY + ONEDAY * 30 * (i - 2);
+        }
+        newDate = new Date(date);
+        task.date = newDate.toLocaleDateString("ru");
+    })
+};
+adjustDate();
+
+
+// create class of To-Do List
+
 class TodoList{
     constructor(id){
         this.todo = $(id);
@@ -16,17 +46,21 @@ class TodoList{
 
         this.loadTasks();
         this.createEvents();
+        this.sortTasks();
     }
     loadTasks(){
-        $.getJSON("todo-data.json", (todoData)=>{
-            if(this.i === 0) {
-                this.userTodoDataTasks = JSON.parse(JSON.stringify(todoData.tasks));
-            }
-            $.each(this.userTodoDataTasks, (i, taskData)=>{
+    // if you whish to get tasks from JSON use following code
+
+        // $.getJSON("todo-data.json", (todoData)=>{
+        //     if(this.i === 0) {
+        //         this.userTodoDataTasks = JSON.parse(JSON.stringify(todoData.tasks));
+        //     }
+        // });
+        this.userTodoDataTasks = DEFAULT_TASKS;
+        $.each(this.userTodoDataTasks, (i, taskData)=>{
                 let {task, done, date} = taskData; 
                 this.filterName(task, done, date);
-            }); 
-        });
+            });
     }
     filterName(task, done, date){
         let findVal = this.find.val(),
@@ -62,10 +96,10 @@ class TodoList{
         let title = currentTaskTemplate.children(".title");
         let delBtn = currentTaskTemplate.children(".del-btn");
             title.text(task);
-                if(done) {
+                if (done) {
                     title.addClass("done");
                 }
-                if(isExp) {
+                if (isExp) {
                     title.addClass("red");
                 } else {
                     title.addClass("green");
@@ -85,12 +119,21 @@ class TodoList{
         } else {
             this.task.css("boxShadow", "");
             this.date.css("boxShadow", "");
-            this.dateCompare(taskText, false, taskDate);
             this.userTodoDataTasks.push({task: taskText, done: false, date: taskDate});
+            this.loadAgain();
             this.i++;
             this.task.val("");
             this.date.val("");
         }
+    }
+    sortTasks(){
+        this.userTodoDataTasks.sort((a, b) => {
+                let arrA = a.date.split("."),
+                    arrB = b.date.split("."),
+                    dateA = new Date(arrA[2], arrA[1]-1, arrA[0]),
+                    dateB = new Date(arrB[2], arrB[1]-1, arrB[0]);
+                return dateA.getTime() - dateB.getTime();
+            });
     }
     delTask(event){
         let currentDelBtn = $(event.currentTarget),
@@ -115,6 +158,7 @@ class TodoList{
         $(event.currentTarget).toggleClass("done");
     }
     loadAgain(){
+        this.sortTasks();
         this.delList();
         this.loadTasks();
     }

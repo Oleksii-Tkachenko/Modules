@@ -10,7 +10,10 @@
 		<div class="container" id="todo"> 
 			<header>
 				<h1>To-Do List</h1>
-				<button type="button" class="clear-btn">&#10060; Clear List</button>
+				<form class="button-box">
+					<button class="reload"><span>&#10227;</span> Reload</button>
+					<button type="button" class="clear-btn">&#10060; Clear List</button>
+				</form>
 			</header>
 			<form>
 				<div class="input-box">
@@ -19,9 +22,10 @@
 						name="datebox" maxlength="10" class="datefield">
 					<button type="button" class="add-btn">Add Item</button>
 				</div>
-				<button class="reload"><span>&#10227;</span> Reload</button>
-				<label for="find" class="find_label">Find:</label>
-				<input type="text" id="find" class="find" maxlength="20">
+				<div class="find-box">
+					<label for="find" class="find_label">Find:</label>
+					<input type="text" id="find" class="find" maxlength="20">
+				</div>
 			</form>
 			<div class="todo-list">
 				<div class="todo-item">
