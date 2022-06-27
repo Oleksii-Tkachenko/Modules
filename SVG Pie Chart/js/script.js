@@ -87,6 +87,7 @@ function pieChart(data, width, height, cx, cy, r, colors, labels, lx, ly, enable
         polyline.setAttribute("stroke", "#323234");
         polyline.setAttribute("stroke-miterlimit", "0");
         polyline.setAttribute("fill", "none");
+        polyline.setAttribute("pointer-events", "none");
 
         let polylineLength = getPolylineLength(polyline);
 
